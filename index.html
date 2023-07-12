@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatPage</title>
+</head>
+<body>
+    <h1 style="text-align:center;">Demo Chat</h1>
+    <div style="margin:0px auto 50px auto;width:500px;">
+        <textarea id="message_textarea" style="width:100%;margin-bottom:20px;" placeholder="Type Message"></textarea>
+        <button onclick="sendMessage();" style="margin-bottom:50px;display:block;margin:0px auto 20px auto;">Send</button>
+        <div id="message_div" style="height:200px;overflow-y:scroll;border:1px solid black;"></div>    
+    </div>
+    <script>
+        var conn = new WebSocket('ws://localhost:8080'); // link of websocket server
+        conn.onopen = function(e) { // fuction to open websocket connection
+            console.log("Connection established!");
+        };
+
+        conn.onmessage = function(e) { //socket function to read message
+            console.log(e.data);// received message in e.data
+            var received_message=e.data;
+            var code=`<div style="color:red;">${received_message}</div>`;
+            document.getElementById('message_div').insertAdjacentHTML("beforeend",code);
+            document.getElementById('message_div').scrollTop = document.getElementById('message_div').scrollHeight;
+        };
+
+        function sendMessage(){ // onclick function to send message
+            var sent_message=document.getElementById('message_textarea').value;
+            conn.send(sent_message); // socket function to send message
+            var code=`<div style="color:green;">${sent_message}</div>`;
+            document.getElementById('message_div').insertAdjacentHTML("beforeend",code);
+            document.getElementById('message_textarea').value='';
+            document.getElementById('message_div').scrollTop = document.getElementById('message_div').scrollHeight;
+        }
+    </script>       
+    
+</body>
+</html>
